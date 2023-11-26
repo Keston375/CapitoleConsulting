@@ -23,14 +23,15 @@ public class ECommerceService {
 
     public FinalPriceResponse getProductPrice(FinalPriceRequest finalPriceRequest){
         List<PricesDao>  prices = eCommerceRepository.findAllByProductIdAndBrandIdAndStartDateBeforeAndEndDateAfter(finalPriceRequest.getProductId(),
-                finalPriceRequest.getBrandId(), finalPriceRequest.getApplicationDate(), finalPriceRequest.getApplicationDate());
+                finalPriceRequest.getBrandId(), finalPriceRequest.getApplicationDate(),
+                finalPriceRequest.getApplicationDate());
 
         // i need to filter by priority if i receive more than 1
         Optional<PricesDao> priceFiltered = getItemWithHighestPriority(prices);
 
         // if the list is empty i return null
         return priceFiltered.map(pricesDao -> FinalPriceResponse.builder().finalPrice(pricesDao.getPrice())
-                .productId(pricesDao.getProductId()).priceList(pricesDao.getPriceListId())
+                .productId(pricesDao.getProductId()).brandId(pricesDao.getBrandId()).priceList(pricesDao.getPriceListId())
                 .applicationDate(finalPriceRequest.getApplicationDate()).startDate(pricesDao.getStartDate())
                 .endDate(pricesDao.getEndDate()).build()).orElse(null);
 

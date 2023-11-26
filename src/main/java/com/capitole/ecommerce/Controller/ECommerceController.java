@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 
 @Controller
 public class ECommerceController {
@@ -22,10 +24,20 @@ public class ECommerceController {
     }
 
     @GetMapping("/getPrice")
-    public ResponseEntity<FinalPriceResponse> getPriceByAppDateProductIdAndBrandId(@RequestParam("applicationDate")LocalDateTime applicationDate,
+    public ResponseEntity<FinalPriceResponse> getPriceByAppDateProductIdAndBrandId(@RequestParam("applicationDate")String applicationDate,
                                                                                    @RequestParam("productId") Integer productId,
                                                                                    @RequestParam("brandId") Integer brandId){
-            FinalPriceResponse response = eCommerceService.getProductPrice(FinalPriceRequest.builder().applicationDate(applicationDate).productId(productId)
+
+        LocalDateTime applicationDateParsed;
+        try {
+             applicationDateParsed = LocalDateTime.parse(applicationDate, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+        } catch (DateTimeParseException e) {
+            // Handle parsing exception if required
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+
+        FinalPriceResponse response = eCommerceService.getProductPrice(FinalPriceRequest.builder()
+                    .applicationDate(applicationDateParsed).productId(productId)
                     .brandId(brandId).build());
 
             return response == null ? new ResponseEntity<>(HttpStatus.NOT_FOUND) : new ResponseEntity<>(response,HttpStatus.OK);
