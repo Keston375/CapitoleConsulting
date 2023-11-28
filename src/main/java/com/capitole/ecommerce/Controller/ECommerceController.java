@@ -23,7 +23,7 @@ public class ECommerceController {
         this.eCommerceService = eCommerceService;
     }
 
-    @GetMapping("/getPrice")
+    @GetMapping("/Price")
     public ResponseEntity<FinalPriceResponse> getPriceByAppDateProductIdAndBrandId(@RequestParam("applicationDate")String applicationDate,
                                                                                    @RequestParam("productId") Integer productId,
                                                                                    @RequestParam("brandId") Integer brandId){
